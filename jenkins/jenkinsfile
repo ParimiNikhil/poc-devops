@@ -1,7 +1,8 @@
 pipeline{
+    
     agent{
         node{
-            lable 'poc-devops'
+            label 'poc-devops'
         }
     }
 
@@ -46,7 +47,7 @@ pipeline{
             }
         }
 
-        satge('K8s AutoDeployment'){
+        stage('K8s AutoDeployment'){
             steps{
                 dir('manifests'){
                     withCredentials([string(credentialsId: 'service_account', variable: 'service_account_token')]) {
