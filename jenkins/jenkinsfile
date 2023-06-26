@@ -1,0 +1,65 @@
+pipeline{
+    agent{
+        node{
+            lable 'poc-devops'
+        }
+    }
+
+    options{
+        timestamps()
+        buildDiscarder(logRotator(numToKeepStr: '2', artifactNumToKeepStr: '2'))
+        timeout(time: 60, unit: 'MINUTES')
+        disableConcurrentBuilds()
+    }
+
+    parameters {
+        string(name:'appbranch', defaultValue:'main', description: "Application Branch name of the Repo")
+    }
+
+    stages{
+
+        stage('ApplicationCode-checkout-Github'){
+            steps{
+                git branch:appbranch , url:'https://github.com/ParimiNikhil/poc-devops.git'
+            }
+        }
+
+        stage('Maven-Build'){
+            steps{
+                sh 'mvn clean package'
+            }
+        }
+
+        stage('Docker-Build'){
+            steps{
+                withCredentials([string(credentialsId: '', variable: '')]){
+                    sh 'docker build . -t nikhilkumar11/poc-devops:poclatest'
+                    sh 'docker login -u nikhilkumar11 -p ${}'
+                    sh 'docker push nikhilkumar11/poc-devops:poclatest'
+                }
+            }
+        }
+
+        stage('k8sManifest-checkout'){
+            steps{
+                git branch:appbranch , url:'https://github.com/ParimiNikhil/poc-devops-k8s.git'
+            }
+        }
+
+        satge('K8s AutoDeployment'){
+            steps{
+                dir('manifests'){
+
+                }
+            }
+        }
+
+        stage('Archive and clean workspace') {
+            steps {
+                //archiveArtifacts 'target/devops-pylife*.jar'
+                archiveArtifacts artifacts: 'target/devops*.jar', followSymlinks: false
+                cleanWs()
+            }
+        }
+    }
+}
