@@ -52,8 +52,8 @@ pipeline{
                 dir('manifests'){
                     withCredentials([string(credentialsId: 'service_account', variable: 'service_account_token')]) {
                         sh 'ls -l'
-                        sh 'kubectl --server=https://0AF6DE842047BEEFE3C821244E810A8F.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token=${service_account_token} apply -f deployment.yml'
-                        sh 'kubectl --server=https://0AF6DE842047BEEFE3C821244E810A8F.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token=${service_account_token} apply -f service.yml'
+                        sh 'kubectl --server=https://0AF6DE842047BEEFE3C821244E810A8F.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="${service_account_token}" apply -f deployment.yml'
+                        sh 'kubectl --server=https://0AF6DE842047BEEFE3C821244E810A8F.gr7.us-east-1.eks.amazonaws.com --insecure-skip-tls-verify --token="${service_account_token}" apply -f service.yml'
                         sh 'echo done'
                         sh 'kubectl get deployments'
                         sh 'kubectl get services'
